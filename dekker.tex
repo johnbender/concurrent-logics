@@ -1,0 +1,37 @@
+\documentclass[12pt]{article}
+\usepackage{bbold}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{algorithmicx}
+\usepackage{algpascal}
+
+\newcommand{\ifstmt}[3]{
+  & \textbf{if}\ #1 \\
+  & \textbf{then}\ \\
+  & \quad #2\ \\
+  & \textbf{else} \\
+  & \quad #3
+}
+
+\newcommand{\emp}{
+  \textbf{emp}\
+}
+
+\begin{document}
+
+\begin{alignat*}{1}
+  &  f_2.write() \\
+  \ifstmt{f_1.read() = 0}{[\,l_1\,] := 1}{\textbf{skip}} \\
+\end{alignat*}
+
+\begin{alignat*}{1}
+  & \{ RI_{f_2}\ \} \\
+  & \{\ \emp ^*\ (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land l_2 \mapsto 0 ))\,\} \\
+  & \{\ \emp ^*\ (f_2 = 0 \land l_2 \mapsto 0 )\,\} \\
+  &  f_2.write( 1 ) \\
+  & \{\ l_2 \mapsto 0\ ^*\ (f_2 = 1 \land \emp )\,\} \\
+  & \{\ l_2 \mapsto 0\ ^*\ (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land l_2 \mapsto 0 ))\,\} \\
+  \ifstmt{f_1.read() = 0}{[\,l_1\,] := 1}{\textbf{skip}} \\
+\end{alignat*}
+
+\end{document}

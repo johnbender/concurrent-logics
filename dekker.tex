@@ -37,158 +37,134 @@
   (\riftwofst \lor \riftwosnd)
 }
 
+\newcommand{\rifonefst}{
+  (f_1 = 1 \land \mt{l_1}{\_})
+}
+
+\newcommand{\rifonesnd}{
+  ( f_1 = 0 \land \emp)
+}
+
+\newcommand{\rifone}{
+  (\rifonefst \lor \rifonesnd)
+}
+
 \begin{document}
 
 \begin{alignat*}{1}
   &  f_2.write(1) \\
-  \ifstmt{ f_1.read() = 0}{& \quad [\,l_1\,] := 1}{& \quad \textbf{skip}} \\
+  \ifstmt{ f_1.read() = 0}{& \quad [\,l_1\,] := 0}{& \quad \textbf{skip}} \\
 \end{alignat*}
 
 \begin{alignat*}{1}
   & RI_{f_2} = \riftwo \\
-  & -- \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\mt{l_2}{\_}}{RI_{f_2}}}\} \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\mt{l_2}{\_}}{\riftwo}}\} \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\mt{l_2}{\_}}{\riftwosnd}}\} \\
+  & - \\
+  & \{\ \sepcon{\mt{l_2}{\_}}{RI_{f_2}}\ \} \\
+  & \{\ \sepcon{\mt{l_2}{\_}}{\riftwo}\ \} \\
+  & \{\ \sepcon{\mt{l_2}{\_}}{\riftwosnd}\ \} \\
   &  f_2.write( 1 ) \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\emp}{\riftwofst}}\} \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\emp}{\riftwo}}\} \\
-  & \{\ \sepcon{\mt{l_1}{0}}{\sepcon{\emp}{RI_{f_2}}}\} \\
-  & \{\ \sepcon{(\mt{l_1}{0} \lor \mt{l_1}{1}\,)}{\sepcon{\emp}{RI_{f_2}}}\} \\
+  & \{\ \sepcon{\emp}{\riftwofst} \ \} \\
+  & \{\ \sepcon{\emp}{\riftwo} \ \} \\
+  & \{\ \sepcon{\emp}{RI_{f_2}} \ \} \\
+  & \{\ \sepcon{(\emp \lor \mt{l_1}{\_}\,)}{RI_{f_2}}\ \} \\
   \ifstmt{
     f_1.read() = 0
   }{
-    & \quad \{\ \sepcon{(\mt{l_1}{0} \lor \mt{l_1}{1}\,)}{\sepcon{\emp}{RI_{f_2}}} \land f_1 = 0\} \\
-    & \quad [\,l_1\,] := 1 \\
+    & \quad \{\ \sepcon{(\emp \lor \mt{l_1}{\_}\,)}{RI_{f_2}} \land f_1 = 0\ \} \\
+    & \quad [\,l_1\,] := 0 \\
     & \quad \{\
     \sepcon{
-      (\mt{l_1}{0} \lor \mt{l_1}{1}\,)
+      (\emp \lor \mt{l_1}{0}\,)
     }{
-      \sepcon{\emp}{RI_{f_2}}
+      RI_{f_2}
     }
-    \land f_1 = 0\}
+    \land f_1 = 0\ \}
   }{
     & \quad \{\
     \sepcon{
-      (\mt{l_1}{0} \lor \mt{l_1}{1}\,)
+      (\emp \lor \mt{l_1}{\_}\,)
     }{
-      \sepcon{\emp}{RI_{f_2}}
+      RI_{f_2}
     }
-    \land f_1 \neq 0\} \\
+    \land f_1 \neq 0\ \} \\
     & \quad \textbf{skip} \\
     & \quad \{\
     \sepcon{
-      (\mt{l_1}{0} \lor \mt{l_1}{1}\,)
+      (\emp \lor \mt{l_1}{\_}\,)
     }{
-      \sepcon{\emp}{RI_{f_2}}
+      RI_{f_2}
     }
-    \land f_1 \neq 0\}
+    \land f_1 \neq 0\ \}
   }
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{\_} ))\,\} \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ RI_{f_2}\,\} \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ RI_{done_1}\ ^*\ RI_{f_2}\,\} \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ RI_{done_1}\ ^*\ RI_{f_2}\,\} \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ ((done_1 = 0 \land \emp ) \lor (done_1 = 1 \land \mt{l_2}{\_})\ ^*\ RI_{f_2}\,\} \\
-  & done_1.write(1); \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \emp ^*\ ((done_1 = 0 \land \emp ) \lor (done_1 = 1 \land \mt{l_2}{\_})\ ^*\ RI_{f_2}\,\}
-\end{alignat*}
-
-\begin{alignat*}{1}
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\  ^*\ \ (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{\_} ))\,\} \\
-  & ^*\\
-  & \{\ (\emp\ \lor\ \mt{l_2}{1})\  ^*\ \ (( f_1 = 1 \land \emp) \lor ( f_1 = 0 \land \mt{l_1}{\_} ))\,\} \\
-  & -- \\
-  & f_1 = 1, f_2 = 1 \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\ ^*\  \mt{l_2}{\_}\ ^*\ ( f_2 = 1 \land \emp)\} \\
-  & ^*\\
-  & \{\ (\emp\ \lor\ \mt{l_2}{1})\ ^*\  \mt{l_1}{\_}\ ^*\ ( f_1 = 1 \land \emp)\} \\
-  & -- \\
-  & f_1 = 0, f_2 = 1 \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\  ^*\  \mt{l_2}{\_}\ ^*\ (f_2 = 1 \land \emp)\,\} \\
-  & ^*\\
-  & \{\ (\emp\ \lor\ \mt{l_2}{1})\  ^*\  \mt{l_1}{\_}\ ^*\ (f_1 = 0 \land \mt{l_1}{\_} )\,\} \\
-  & -- \\
-  & f_1 = 1, f_2 = 0 \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\  ^*\  \mt{l_2}{\_}\ ^*\ ( f_2 = 0 \land \mt{l_2}{\_} )\,\} \\
-  & ^*\\
-  & \{\ (\emp\ \lor\ \mt{l_2}{1})\  ^*\  \mt{l_1}{\_}\ ^*\ (f_1 = 1 \land \emp)\,\} \\
-  & -- \\
-  & f_1 = 0, f_2 = 0 \\
-  & \{\ (\emp\ \lor\ \mt{l_1}{1})\  ^*\  \mt{l_2}{\_}\ ^*\ (f_2 = 0 \land \mt{l_2}{\_} ))\,\} \\
-  & ^*\\
-  & \{\ (\emp\ \lor\ \mt{l_2}{1})\  ^*\  \mt{l_1}{\_}\ ^*\ (f_1 = 0 \land \mt{l_1}{\_} ))\,\}
+  & \{\ \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{ RI_{f_2} } \ \}
 \end{alignat*}
 
 \newpage
 
 \begin{alignat*}{1}
-  \{
-  & ((f_1 \neq 1 \land \mt{l_1}{1}) \lor (f_2 \neq 1 \land \mt{l_2}{1})) \\
-  & \lor \\
-  & ( \sepcon{f_2 = 1 \land \mt{l_1}{0}}{f_1 = 1 \land \mt{l_2}{0}})
-  \}
+  &  f_1.write(1) \\
+  \ifstmt{ f_2.read() = 0}{& \quad [\,l_2\,] := 0}{& \quad \textbf{skip}} \\
 \end{alignat*}
 
 \begin{alignat*}{1}
-  \{
-  & (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{\_} )) \\
-  &\ ^* \\
-  & (( f_1 = 1 \land \emp) \lor ( f_1 = 0 \land \mt{l_1}{\_} )) \\
-  &\ ^* \\
-  & ((\sepcon{\mt{l_1}{1}}{\mt{l_2}{0}})\\
-  & \lor\\
-  & (\sepcon{\mt{l_1}{0}}{\mt{l_2}{1}})\\
-  & \lor \\
-  & (\sepcon{\mt{l_1}{0}}{\mt{l_2}{0}}))
-  \}
-\end{alignat*}
-
-\begin{alignat*}{1}
-  \{
-  & (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{0} )) \\
-  &\ ^* \\
-  & (( f_1 = 1 \land \emp) \lor ( f_1 = 0 \land \mt{l_1}{0} )) \\
-  &\ ^* \\
-  & ((\mt{l_1}{1})\\
-  & \lor\\
-  & (\mt{l_2}{1})\\
-  & \lor \\
-  & (\sepcon{\mt{l_1}{0}}{\mt{l_2}{0}}))
-  \}
-\end{alignat*}
-
-\begin{alignat*}{1}
-  \{
-  & (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{0} \land \mt{l_1}{1})\\
-  &\ ^* \\
-  & (( f_1 = 1 \land \emp) \lor ( f_1 = 0 \land \mt{l_1}{0} \land \mt{l_2}{1}))\\
-  &\ ^* \\
-  & (\sepcon{\mt{l_1}{0}}{\mt{l_2}{0}}))
-  \}
+  & RI_{f_1} = \rifone \\
+  & - \\
+  & \{\ \sepcon{\mt{l_1}{\_}}{RI_{f_1}}\ \} \\
+  & \{\ \sepcon{\mt{l_1}{\_}}{\rifone}\ \} \\
+  & \{\ \sepcon{\mt{l_1}{\_}}{\rifonesnd}\ \} \\
+  &  f_1.write( 1 ) \\
+  & \{\ \sepcon{\emp}{\rifonefst} \ \} \\
+  & \{\ \sepcon{\emp}{\rifone} \ \} \\
+  & \{\ \sepcon{\emp}{RI_{f_1}} \ \} \\
+  & \{\ \sepcon{(\emp \lor \mt{l_2}{\_}\,)}{RI_{f_1}}\ \} \\
+  \ifstmt{
+    f_2.read() = 0
+  }{
+    & \quad \{\ \sepcon{(\emp \lor \mt{l_2}{\_}\,)}{RI_{f_1}} \land f_2 = 0\ \} \\
+    & \quad [\,l_2\,] := 0 \\
+    & \quad \{\
+    \sepcon{
+      (\emp \lor \mt{l_2}{0}\,)
+    }{
+      RI_{f_1}
+    }
+    \land f_2 = 0\ \}
+  }{
+    & \quad \{\
+    \sepcon{
+      (\emp \lor \mt{l_2}{\_}\,)
+    }{
+      RI_{f_1}
+    }
+    \land f_2 \neq 0\ \} \\
+    & \quad \textbf{skip} \\
+    & \quad \{\
+    \sepcon{
+      (\emp \lor \mt{l_2}{\_}\,)
+    }{
+      RI_{f_1}
+    }
+    \land f_2 \neq 0\ \}
+  }
+  & \{\ \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{ RI_{f_1}} \ \}
 \end{alignat*}
 
 \newpage
 
 \begin{alignat*}{1}
-  & \{\ \emp\ ^*\ (( f_2 = 1 \land \emp) \lor ( f_2 = 0 \land \mt{l_2}{1}) \lor (\mt{l_1}{1}1b \land \mt{l_2}{\_}))\,\}\\
-  &  f_2.write( 1 ) \\
-  & \{\ \mt{l_2}{\_}\ ^*\ ((f_2 = 1 \land \emp ) \lor ( f_2 = 0 \land \mt{l_2}{1} \land \mt{l_2}{\_}))\,\} \\
-  & \cdots \\
-  & \{\ \mt{l_2}{\_}\ ^*\ (( \mt{l_1}{0} \land \emp) \lor ( \mt{l_1}{1} \land \mt{l_2}{\_} )) \} \\
-  & [\,l_1\,] := 1 \\
-  & \{\ \emp\ ^*\ (( \mt{l_1}{0} \land \emp) \lor ( \mt{l_1}{1} \land \mt{l_2}{\_} )) \} \\
+  & \{\
+  \sepcon{
+    \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{ RI_{f_1}}
+  }{
+    \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{ RI_{f_2} }
+  }
+  \ \} \\
+  & \{\
+  \sepcon{
+    \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{\rifone}
+  }{
+    \\ & \quad \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{\riftwo}
+  }\ \}
 \end{alignat*}
-
-\begin{alignat*}{1}
-  & f_1 = 0, f_2 = 1 \\
-  \{
-  & (( f_2 = 1 \land \emp) )) \\
-  &\ ^* \\
-  & ((f_1 = 0 \land \mt{l_1}{0} )) \\
-  &\ ^* \\
-  & (\mt{l_2}{1})\\
-  \}
-\end{alignat*}
-
 
 \end{document}

@@ -4,13 +4,15 @@
 \usepackage{amssymb}
 \usepackage{algorithmicx}
 \usepackage{algpascal}
+\usepackage{trfrac}
+\usepackage{xcolor}
 
 \newcommand{\ifstmt}[3]{
   & \textbf{if}\ #1\ \textbf{then}\ \\
   #2\ \\
   & \textbf{else} \\
   #3\ \\
-  & \textbf{end} \\
+  & \textbf{endif} \\
 }
 
 \newcommand{\mt}[2]{
@@ -26,7 +28,7 @@
 }
 
 \newcommand{\riftwofst}{
-  (f_2 = 1 \land \mt{l_2}{\_})
+  (f_2 = 1 \land \mt{l_2}{0})
 }
 
 \newcommand{\riftwosnd}{
@@ -38,7 +40,7 @@
 }
 
 \newcommand{\rifonefst}{
-  (f_1 = 1 \land \mt{l_1}{\_})
+  (f_1 = 1 \land \mt{l_1}{0})
 }
 
 \newcommand{\rifonesnd}{
@@ -54,11 +56,11 @@
 \begin{alignat*}{1}
   &  f_2.write(1) \\
   \ifstmt{ f_1.read() = 0}{& \quad [\,l_1\,] := 0}{& \quad \textbf{skip}} \\
+  & \\
+  & RI_{f_2} = \riftwo \\
 \end{alignat*}
 
 \begin{alignat*}{1}
-  & RI_{f_2} = \riftwo \\
-  & - \\
   & \{\ \sepcon{\mt{l_2}{\_}}{RI_{f_2}}\ \} \\
   & \{\ \sepcon{\mt{l_2}{\_}}{\riftwo}\ \} \\
   & \{\ \sepcon{\mt{l_2}{\_}}{\riftwosnd}\ \} \\
@@ -71,10 +73,10 @@
     f_1.read() = 0
   }{
     & \quad \{\ \sepcon{(\emp \lor \mt{l_1}{\_}\,)}{RI_{f_2}} \land f_1 = 0\ \} \\
-    & \quad [\,l_1\,] := 0 \\
+    & \quad [\,l_1\,] := 1 \\
     & \quad \{\
     \sepcon{
-      (\emp \lor \mt{l_1}{0}\,)
+      (\emp \lor \mt{l_1}{1}\,)
     }{
       RI_{f_2}
     }
@@ -90,13 +92,13 @@
     & \quad \textbf{skip} \\
     & \quad \{\
     \sepcon{
-      (\emp \lor \mt{l_1}{\_}\,)
+      (\emp \lor \mt{l_1}{1}\,)
     }{
       RI_{f_2}
     }
     \land f_1 \neq 0\ \}
   }
-  & \{\ \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{ RI_{f_2} } \ \}
+  & \{\ \sepcon{ (\emp \lor \mt{l_1}{1}\,) }{ RI_{f_2} } \ \}
 \end{alignat*}
 
 \newpage
@@ -104,11 +106,11 @@
 \begin{alignat*}{1}
   &  f_1.write(1) \\
   \ifstmt{ f_2.read() = 0}{& \quad [\,l_2\,] := 0}{& \quad \textbf{skip}} \\
+  & \\
+  & RI_{f_1} = \rifone \\
 \end{alignat*}
 
 \begin{alignat*}{1}
-  & RI_{f_1} = \rifone \\
-  & - \\
   & \{\ \sepcon{\mt{l_1}{\_}}{RI_{f_1}}\ \} \\
   & \{\ \sepcon{\mt{l_1}{\_}}{\rifone}\ \} \\
   & \{\ \sepcon{\mt{l_1}{\_}}{\rifonesnd}\ \} \\
@@ -121,10 +123,10 @@
     f_2.read() = 0
   }{
     & \quad \{\ \sepcon{(\emp \lor \mt{l_2}{\_}\,)}{RI_{f_1}} \land f_2 = 0\ \} \\
-    & \quad [\,l_2\,] := 0 \\
+    & \quad [\,l_2\,] := 1 \\
     & \quad \{\
     \sepcon{
-      (\emp \lor \mt{l_2}{0}\,)
+      (\emp \lor \mt{l_2}{1}\,)
     }{
       RI_{f_1}
     }
@@ -140,30 +142,41 @@
     & \quad \textbf{skip} \\
     & \quad \{\
     \sepcon{
-      (\emp \lor \mt{l_2}{\_}\,)
+      (\emp \lor \mt{l_2}{1}\,)
     }{
       RI_{f_1}
     }
     \land f_2 \neq 0\ \}
   }
-  & \{\ \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{ RI_{f_1}} \ \}
+  & \{\ \sepcon{ (\emp \lor \mt{l_2}{1}\,) }{ RI_{f_1}} \ \}
 \end{alignat*}
 
 \newpage
 
+Final accounting of resource invariants (after concurrent execution):
+
+\begin{equation*}
+    \trfrac[]{
+      \{P\}init\{RI_{r_1} *\cdots* RI_{r_m} * P'\} \qquad \{P'\}C_1 \| \cdots \| C_n \{Q\}
+    }{
+      \{P\} init;\ \mtt{resource} r_1 \dots\ ;\ C_1 \| \cdots \| C_n\ \color{red} \{RI_{r_1} *\dots* RI_{r_m} *Q\}
+    }
+\end{equation*}
+
+
 \begin{alignat*}{1}
   & \{\
   \sepcon{
-    \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{ RI_{f_1}}
+    \sepcon{ (\emp \lor \mt{l_2}{1}\,) }{ RI_{f_1}}
   }{
-    \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{ RI_{f_2} }
+    \sepcon{ (\emp \lor \mt{l_1}{1}\,) }{ RI_{f_2} }
   }
   \ \} \\
   & \{\
   \sepcon{
-    \sepcon{ (\emp \lor \mt{l_2}{\_}\,) }{\rifone}
+    \sepcon{ (\emp \lor \mt{l_2}{1}\,) }{\rifone}
   }{
-    \\ & \quad \sepcon{ (\emp \lor \mt{l_1}{\_}\,) }{\riftwo}
+    \\ & \quad \sepcon{ (\emp \lor \mt{l_1}{1}\,) }{\riftwo}
   }\ \}
 \end{alignat*}
 

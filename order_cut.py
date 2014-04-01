@@ -1,5 +1,5 @@
 def overlap(left, right):
-    return len(intersection(left, right)) > 0
+    return len(intersection(left, right)) > 1
 
 def intersection(left, right):
     return set(left).intersection(right)
@@ -13,13 +13,13 @@ def heavier_all(weighted_cut, pairs):
 
     for pair in pairs:
         new_weight = 1
-        for (nodes, weight) in weights:
-            if pair == nodes:
+        for (edge, weight) in weights:
+            if pair == edge:
                 new_weight = weight+1
                 pairs.remove(pair)
                 new_weights.append((pair, new_weight))
 
-    # left overs
+    # left overs, pairs that don't already have weights
     for pair in pairs:
         new_weights.append((pair, 1))
 
@@ -40,14 +40,15 @@ def pairs(l):
 
     return result
 
-# a -> c -> b -> e -> f -> d  i -> j
+# a -> c -> b | k -> e | g -> f -> d | h -> l  i -> j
 
 orders = [
     ("a -> b", order(1,3)),
     ("c -> d", order(2,6)),
     ("e -> f", order(4,5)),
     ("g -> h", order(4,6)),
-    ("i -> j", order(8,9))
+    ("i -> j", order(8,9)),
+    ("k -> l", order(3,7))
 ]
 
 def main():
@@ -90,7 +91,6 @@ def main():
         weighted = (edges, nodes, [])
 
         for (oth_edges, cmpr) in candidates:
-
             # if the compared candidates are the same but "permuted"
             if len(set(edges).intersection(set(oth_edges))) > 1:
                 continue

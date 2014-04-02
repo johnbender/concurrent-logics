@@ -1,9 +1,6 @@
 def order(start, finish):
     return range(start, finish + 1)
 
-def min(fst, snd):
-    return fst if fst < snd else snd
-
 def optimal_fences(orders):
     if len(orders) == 0:
         return []
@@ -17,30 +14,32 @@ def optimal_fences(orders):
         current = orders[key]
 
         for num in current:
-            if num + 1 in current:
-                edge = (num, num + 1)
+            if not num + 1 in current:
+                continue
 
-                if not heaviest:
-                    heaviest = edge
+            edge = (num, num + 1)
 
-                if edge in weights:
-                    weights[edge] += 1
-                else:
-                    weights[edge] = 1
+            if not heaviest:
+                heaviest = edge
 
-                if weights[edge] > weights[heaviest]:
-                    heaviest = edge
+            if edge in weights:
+                weights[edge] += 1
+            else:
+                weights[edge] = 1
+
+            if weights[edge] > weights[heaviest]:
+                heaviest = edge
 
     start, end = heaviest
-
-    # remove fenced edges from consideration
     unfenced = {}
+
+    # only retain those orders unfenced at the heaviest edge
     for key in orders:
         current = orders[key]
         if not start in current or not end in current:
             unfenced[key] = current
 
-    # handle the unfenced edges
+    # recursively handle the unfenced edges
     result = [heaviest]
     result.extend(optimal_fences(unfenced))
     return result

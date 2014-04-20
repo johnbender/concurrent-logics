@@ -1,0 +1,5 @@
+* unrolled loops might result in "more code" between fences
+** 1 fence inside a loop might be more expensive than like 10 outside
+
+* minimum spanning tree, heuristic algo
+* overlapping tail/head may be np-complete
